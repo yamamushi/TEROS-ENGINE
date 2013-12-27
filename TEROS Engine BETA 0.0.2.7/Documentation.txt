@@ -1,0 +1,1486 @@
+	As you may have already noticed, the teros.h and teros.cpp resources for the TEROS Engine do not contain any coding comments. For the sake of streamlining the appearance of my code, all of the comments for the TEROS Engine have been included in this documentation file.
+
+Table of Contents:
+	I.  Introduction
+	II. Macros
+	III. Class/Function Manual
+		A. The "Window" Class
+			1. Description
+			2. Variables
+				a. content
+				b. cursors
+				c. activetext
+				d. width
+				e. height
+				f. tlposx
+				g. tlposy
+				h. cursorchar
+				i. fill
+				j. atxtid
+				k. cursorid
+				l. transparency
+			3. Functions
+				a. Window Constructor Function
+				b. loadfromfile
+				c. loadfromvector
+				d. modcontent
+				e. tlrepos
+				f. setcursor
+				g. setactivetext
+				h. setfill
+				i. setcursorchar
+				j. setatxtid
+				k. setcursorid
+				l. settranspid
+				m. putcursor
+				n. readcontent
+				o. putfill
+				p. putcursorchar
+				q. putatxtid
+				r. putcursorid
+				s. puttranspid
+				t. putwidth
+				u. putheight
+				v. puttlposx
+				w. puttlposy
+				x. cursorcount
+				y. activetextcount
+				z. putactivetext
+		B. The "Screen" Class
+			1. Description
+			2. Variables
+				a. display
+				b. layers
+			3. Functions
+				a. Screen Constructor Function
+				b. clrscr
+				c. buildscr
+				d. displayscr
+				e. addlayer
+				f. dellayer
+				g. swaplayer
+				h. modlayer
+				i. layercount
+				j. putlayer
+		C. The "Polygon" Class
+			1. Description
+			2. Variables
+				a. xcoord
+				b. ycoord
+				c. zcoord
+				d. fill
+				e. transparency
+				f. texturemode
+			3. Functions
+				a. Polygon Constructor Function
+				b. modp
+				c. setfill
+				d. settranspid
+				e. center
+				f. putxyz
+				g. settexturemode
+				h. puttexturemode
+				i. putfill
+				j. puttranspid
+				k. centerx
+				l. centery
+				m. centerz
+				n. putpx
+				o. putpy
+				p. putpz
+		D. The "R3Object" Class
+			1. Description
+			2. Variables
+				a. sides
+				b. olink
+				c. rzlink
+				d. rxlink
+				e. rylink
+				f. loadsides
+				g. xbasis
+				h. ybasis
+				i. zbasis
+				j. scalep
+				k. ctrscale
+			3. Functions
+				a. R3Object Constructor Function
+				b. addside
+				c. delside
+				d. modside
+				e. rref3x4
+				f. rot
+				g. basisreset
+				h. putbasis
+				i. modbasis
+				j. shiftctr
+				k. setctr
+				l. center
+				m. ctrscaleoff
+				n. ctrscaleon
+				o. cpyscalep
+				p. addolink
+				q. addrzlink
+				r. addrxlink
+				s. addrylink
+				t. delolink
+				u. delrzlink
+				v. delrxlink
+				w. delrylink
+				x. settexturemode
+				y. saveobj
+				z. clrloadsides
+				aa. putctrscale
+				bb. sidenum
+				cc. olinknum
+				dd. rzlinknum
+				ee. rxlinknum
+				ff. rylinknum
+				gg. loadobj
+				hh. loadsidenum
+				ii. centerx
+				jj. centery
+				kk. centerz
+				ll. putside
+				mm. putolink
+				nn. putrzlink
+				oo. putrxlink
+				pp. putrylink
+				qq. putloadside
+				rr. permcpy
+		E. The "R3Cam" Class
+			1. Description
+			2. Variables
+				a. view
+				b. viewdepth
+				c. objects
+				d. camx
+				e. camy
+				f. camz
+				g. zoomfactor
+				h. cambasisx
+				i. cambasisy
+				j. cambasisz
+				k. viewcolumns
+			3. Functions
+				a. R3Cam Constructor Function
+				b. drawobjects
+				c. drawobject
+				d. drawpolygon
+				e. drawline
+				f. setcampos
+				g. addobject
+				h. delobject
+				i. modobject
+				j. clearview
+				k. rotatecam
+				l. basisreset
+				m. cpybasis
+				n. setviewsize
+				o. modview
+				p. modviewdepth
+				q. texturepolygon
+				r. applyrotation
+				s. setzoomfactor
+				t. scalept
+				u. twodconvert
+				v. getelement
+				w. getelementraw
+				x. getelementindex
+				y. objectnum
+				z. putviewsize
+				aa. putviewcolumns
+				bb. getviewdepth
+				cc. getviewdepthraw
+				dd. putcamx
+				ee. putcamy
+				ff. putcamz
+				gg. putzoomfactor
+				hh. putview
+				ii. putviewdepth
+				jj. putobj
+		F. Miscellaneous Functions
+			1. roundnum
+			2. dist
+			3. findang
+			4. doubletostring
+	IV. Additional Notes
+
+
+I. Introduction
+	The TEROS Engine is a multi-platform, console-based, ASCII graphics engine capable of rendering two-dimensional and three-dimensional displays and written in standard C++.
+
+II. Macros
+	The TEROS Engine contains three macros: "PI," "SCRHEIGHT," and "SCRWIDTH." "PI" specifies the irrational numeric constant. "SCRHEIGHT" and "SCRWIDTH" specify the height and width in ASCII characters of the output terminal.
+
+III. Class/Function Manual
+	The TEROS Engine contains five custom classes: "Window," "Screen," "Polygon," "R3Object," and "R3Cam." Of these five classes, "window" and "Screen" are for the construction and output of two-dimensional displays, and "Polygon," "R3Object," and "R3Cam" are for the construction of three-dimensional objects and displays.
+
+
+A. The "Window" Class
+
+
+1. Description
+	A "Window" object is most simply defined as a two dimensional character array that may be layered atop and under other "Window" objects in the display field of a "Screen" object. Essentially, a "Window" object is much like a program window generated by an operating system. "Window" object content can be custom designed as a .txt file and loaded into a program. Alternatively, content can also be loaded from a vector within the program. Additionally, program variables may be inserted into content loaded from file using user-specified ASCII characters that act as conversion specifiers.
+
+2. Variables
+
+
+a. content
+type: one-dimensional character vector
+
+stores: the raw characters to be displayed within the window.
+
+b. cursors
+type: one-dimensional Boolean vector
+
+stores: the states of cursor identification characters within content.
+
+c. activetext
+type: one-dimensional string vector
+
+stores: the text to be inserted after active text identification characters in content.
+
+d. width
+type: integer
+
+stores: the width of the window object.
+
+e. height
+type: integer
+
+stores: the height of the window object.
+
+f. tlposx
+type: integer
+
+stores: the x coordinate of the top left corner of the window.
+
+g. tlposy
+type: integer
+
+stores: the y coordinate of the top left corner of the window
+
+h. cursorchar
+type: ASCII character
+
+stores: the character to be displayed in place of a cursorid character in content.
+
+i. fill
+type: ASCII character
+stores: the character to be displayed as the background of the window.
+
+j. atxtid
+type: ASCII character
+
+stores: the character that identifies a point at which specified active text is to be inserted in place of content data.
+
+k. cursorid
+type: ASCII character
+stores: the character that identifies a point at which the cursor character may be inserted in place of content data.
+
+l. transparency
+type: ASCII character
+
+stores: the character that identifies a point at which content data is to be ignored, rather than being written atop windows layered below the current window.
+
+
+3. Functions
+
+
+a. Window Constructor Function ("Window ()")
+return type: void
+
+arguments: (void) -> (void)
+
+function: presets the width to 0, the height to zero, the top left corner position to the top left of the display screen, and sets defaults of '>', ' ', '&', '%', and '`' to cursorchar, fill, cursorid, atxtid, and transparency, respectively.
+
+b. loadfromfile
+return type: void
+
+arguments: (string) -> (file name)
+
+function: clears content (variable), reads the user designed window content, determines the maximum width and the height of the content, stores the content to content (variable), fills gaps in uniform line width with the fill character, increases the size of cursors (variable) and activetext (variable) to match the number of identification characters in the file, and pre-sets the cursor and active text instances (cursors default = false; activetext default = "").
+
+c. loadfromvector
+return type: void
+
+arguments: (vector <char>, int) -> (character vector containing content to be loaded, number of columns (used to separate the one-dimensional vector into two-dimensional content))
+
+function: copies the contents of the given vector to content (variable) without identifying cursorid characters or atxtid characters and sets cursorid, atxtid, and transparency to NULL ("\0").
+
+d. modcontent
+return type: void
+
+arguments: (char, int, int) -> (new content character, local x coordinate, local y coordinate)
+
+function: replaces the character at the specified x, y position in content.
+
+e. tlrepos
+return type: void
+
+arguments: (int, int) -> (new global top left corner x coordinate, new global top left corner y coordinate)
+
+function: repositions the window, with the top left corner at the specified x and y coordinates on the display screen.
+
+f. setcursor
+return type: void
+
+arguments: (int, bool) -> (index of the cursor position to be modified, new state of the cursor)
+
+function: sets a given cursor position in content (variable) to true or false (true -> cursorid character at index position is replaced with cursor character on screen output; false -> cursorid character at index position is replaced with fill character on screen ouput).
+
+g. setactivetext
+return type: void
+
+arguments: (int, string) -> (index of the active text position to be modified, string to replace the content starting at the indexed position)
+
+function: sets a given active text position in content (variable) to overlay a given string.
+
+h. setfill
+return type: void
+
+arguments: (char) -> (new fill character)
+
+function: replaces the fill character and changes all characters in content (variable) matching the old fill character to the new fill character.
+
+i. setcursorchar
+return type: void
+
+arguments: (char) -> (new cursor character)
+
+function: replaces the old cursor character with a new one.
+
+j. setatxtid
+return type: void
+
+arguments: (char) -> (new atxtid character)
+
+function: replaces the atxtid character.
+
+k. setcursorid
+return type: void
+
+arguments: (char) -> (new cursorid character)
+
+function: replaces the cursorid character.
+
+l. settranspid
+return type: void
+
+arguments: (char) -> (new transpid character)
+
+function: replaces the transpid character.
+
+m. putcursor
+return type: Boolean (defaults to false)
+
+arguments: (int) -> (index of cursor)
+
+function: returns the state of an indexed cursor position in content (variable).
+
+n. readcontent
+return type: ASCII character (defaults to ' ')
+
+arguments (int, int) -> (local x coordinate, local y coordinate)
+
+function: returns the character stored in content (variable) at the specified x and y coordinates.
+
+o. putfill
+return type: ASCII character 
+
+arguments: (void) -> (void)
+
+function: returns the fill character.
+
+p. putcursorchar
+return type: ASCII character
+
+arguments: (void) -> (void)
+
+function: returns cursorchar.
+
+q. putatxtid
+return type: ASCII character
+
+arguments: (void) -> (void)
+
+function: returns the atxtid character.
+
+r. putcursorid
+return type: ASCII character
+
+arguments: (void) -> (void)
+
+function: returns the cursorid character.
+
+s. puttranspid
+return type: ASCII character
+
+arguments: (void) -> (void)
+
+function: returns the transparency character.
+
+t. putwidth
+return type: integer
+
+arguments: (void) -> (void)
+
+function: returns the window width.
+
+u. putheight
+return type: integer
+
+arguments: (void) -> (void)
+
+function: returns the window height.
+
+v. puttlposx
+return type: integer
+
+arguments: (void) -> (void)
+
+function: returns the global x coordinate of the top left corner of the window.
+
+w. puttlposy
+return type: integer
+
+arguments: (void) -> (void)
+
+function: returns the global y coordinate of the top left corner of the window.
+
+x. cursorcount
+return type: integer
+
+arguments: (void) -> (void)
+
+function: returns the number of cursor positions detected in content (variable).
+
+y. activetextcount
+return type: integer
+
+arguments: (void) -> (void)
+
+function: returns the number of active text positions detected in content (variable).
+
+z. putactivetext
+return type: string (defaults to NULL)
+
+arguments: (int) -> (index of active text position)
+
+function: returns the active text to be overlayed starting at a given index position in content (variable).
+
+
+B. The "Screen" Class
+
+
+1. Description
+	The "Screen" class acts as a canvas upon which window objects are layered to form a display field. If the "Window" class is analogous to an operating system window, the "Screen" class is analogous to the monitor of a computer.
+
+2. Variables
+
+
+a. display
+type: two-dimensional character array (of size SCRWIDTH by SCRHEIGHT [see Macros])
+
+stores: the display field that results from layering all of the window objects pointed to in the layers vector.
+
+b. layers
+type: one-dimensional Window pointer array
+
+stores: the memory addresses of the windows to be displayed in the order they are layered (0 is the bottom layer).
+
+
+3. Functions
+
+
+a. Screen Constructor Function
+return type: void
+
+arguments: (void) -> (void)
+
+function: clears the screen.
+
+b. clrscr
+return type: void
+
+arguments: (void) -> (void)
+
+function: writes every index in display (variable) to ' '.
+
+c. buildscr
+return type: void
+
+arguments: (void) -> (void)
+
+function: writes each window layer by layer in the correct position, replacing identification characters with their specified replacements as the layers are written.
+
+d. displayscr
+return type: void
+
+arguments: (void) -> (void)
+
+function: displays the contents of display (variable) to stdout (leaves one character of blank space between the left side of the terminal and the next row of content).
+
+e. addlayer
+return type: void
+
+arguments: (Window *) -> (pointer to the window to be added to the top layer)
+
+function: increases the size of layers (variable) and records the memory address specified in the topmost layer index.
+
+f. dellayer
+return type: void
+
+arguments: (int) -> (layer index to be deleted)
+
+function: deletes the selected layer and closes the gap.
+
+g. swaplayer
+return type: void
+
+arguments: (int, int) -> (layer1 index, layer2 index)
+
+function: swaps the memory addresses stored at the indices of the first and second specified layers.
+
+h. modlayer
+return type: void
+
+arguments: (int, Window *) -> (layer index to be modified, Window object memory address to replace current address)
+
+function: replaces the memory address at the specified layer index with that of a new window object.
+
+i. layercount
+return type: integer
+
+arguments: (void) -> (void)
+
+function: returns the number of layers store in layers (variable).
+
+j. putlayer
+return type: Window Pointer
+
+arguments: (int) -> (layer index)
+
+function: returns the memory address stored at the specified layer index.
+
+
+C. The "Polygon" Class
+
+
+1. Description
+	Essentially, a "Polygon" object is a collection of three points in three-space describing a triangular segment of a plane. "Polygon" objects may be displayed as either wire-frames or as textured planes.
+
+2. Variables
+
+
+a. xcoord
+type: One-dimensional array of size 3
+
+stores: the x coordinates of the three points in the polygon.
+
+b. ycoord
+type: One-dimensional array of size 3
+
+stores: the y coordinates of the three points in the polygon.
+
+c. zcoord
+type: One-dimensional array of size 3
+
+stores: the z coordinates of the three points in the polygon.
+
+d. fill
+type: ASCII character
+
+stores: the character used to either texture the polygon or to draw the wireframe.
+
+e. transparency
+type: ASCII character
+
+stores: the character used to specify transparent polygon shading (only works with texturepolygon (function)).
+
+f. texturemode
+type: Boolean
+
+stores: the current mode of polygon display (true -> texture surface; false -> wireframe).
+
+
+3. Functions
+
+
+a. Polygon Constructor Function
+return type: void
+
+arguments: (void) -> (void)
+
+function: sets texturemode to true, sets fill default to char(176), sets transparency default to '`', and sets all polygon point coordinates to 0.
+
+b. modp
+return type: void
+
+arguments: (int, double, double, double) -> (point index, new x coordinate, new y coordinate, new z coordinate)
+
+function: replaces the x, y, and z coordinate values of a point defining the polygon.
+
+c. setfill
+return type: void
+
+arguments: (char) -> (new fill character)
+
+function: replaces the fill character with a new, selected character.
+
+d. settranspid
+return type: void
+
+arguments: (char) -> (new transparency character)
+
+function: replaces the transparency character with a new, selected character.
+
+e. center
+return type: void
+
+arguments: (double [3]) -> (array to store center coordinates)
+
+function: stores the coordinates of the center of the polygon to the parsed array.
+
+f. putxyz
+return type: void
+
+arguments: (int, double [3]) -> (point index, array to store indexed point coordinates)
+
+function: stores the coordinates of the selected point to the parsed array.
+
+g. settexturemode
+return type: void
+
+arguments: (bool) -> (new texture mode)
+
+function: sets the texture mode to the selected mode (true -> texturing; false -> wireframe).
+
+h. puttexturemode
+return type: Boolean
+
+arguments: (void) -> (void)
+
+function: returns the current texture mode.
+
+i. putfill
+return type: ASCII character
+
+arguments: (void) -> (void)
+
+function: returns the fill character.
+
+j. puttranspid
+return type: ASCII character
+
+arguments: (void) -> (void)
+
+function: returns the transparency identification character.
+
+k. centerx
+return type: double
+
+arguments: (void) -> (void)
+
+function: returns the x coordinate of the center of the polygon.
+
+l. centery
+return type: double
+
+arguments: (void) -> (void)
+
+function: returns the y coordinate of the center of the polygon.
+
+m. centerz
+return type: double
+
+arguments: (void) -> (void)
+
+function: returns the z coordinate of the center of the polygon.
+
+n. putpx
+return type: double
+
+arguments: (int) -> (point index)
+
+function: returns the x coordinate of the selected point.
+
+o. putpy
+return type: double
+
+arguments: (int) -> (point index)
+
+function: returns the y coordinate of the selected point.
+
+p. putpz
+return type: double
+
+arguments: (int) -> (point index)
+
+function: returns the z coordinate of the selected point.
+
+
+D. The "R3Object" Class
+
+
+1. Description
+	An "R3Object" object is best described as a collection of polygons. "R3Object" objects are rotated in three-space by applying the rotation of a local object basis to the constituent polygons' points from the reference point of a center of rotation (by default the geometric center of the object). Additionally, these objects may be linked together to form more complex objects using object and rotational linking.
+
+2. Variables
+
+
+a. sides
+type: Polygon pointer vector
+
+stores: pointers to the object's constituent polygons.
+
+b. olink
+type: R3Object pointer vector
+
+stores: pointers to the R3Objects object linked to the R3Object.
+
+c. rzlink
+type: R3Object pointer vector
+
+stores: pointers to the R3Objects rotationally linked on the z-axis to the R3Object.
+
+d. rxlink
+type: R3Object pointer vector
+
+stores: pointers to the R3Objects rotationally linked on the x-axis to the R3Object.
+
+e. rylink
+type: R3Object pointer vector
+
+stores: pointers to the R3Objects rotationally linked on the y-axis to the R3Object.
+
+f. loadsides
+type: Polygon vector
+
+stores: Polygons describing an R3Object loaded from file.
+
+g. xbasis
+type: one-dimensional double array of size 3
+
+stores: the x-axis basis vector.
+
+h. ybasis
+type: one-dimensional double array of size 3
+
+stores: the y-axis basis vector.
+
+i. zbasis
+type: one-dimensional double array of size 3
+
+stores: the z-axis basis vector.
+
+j. scalep
+type: one-dimensional double array of size 3
+
+stores: the center of rotation.
+
+k. ctrscale
+type: Boolean
+
+stores: the current mode of rotational center scaling.
+
+
+3. Functions
+
+
+a. R3Object Constructor Function
+return type: void
+
+arguments: (void) -> (void)
+
+function: presets the olink, rzlink, rylink, and rxlink vectors to a size of 0, sets center scaling to true, and resets the object basis. Additionally, the R3Object scaling point is initialized to (0.0, 0.0, 0.0) to avoid floating point errors in the permcpy function.
+
+b. addside
+return type: void
+
+arguments: (Polygon *) -> (pointer to the polygon to be added to the R3Object)
+
+function: adds the new polygon pointer to the sides vector.
+
+c. delside
+return type: void
+
+arguments: (int) -> (sides index)
+
+function: deletes the polygon pointer at the selected index.
+
+d. modside
+return type: void
+
+arguments: (int, Polygon *) -> (sides index of memory address to be modified, polygon pointer to be modified
+
+function: replaces the memory address at the selected index.
+
+e. rref3x4
+return type: void
+
+arguments: (double [3][4]) -> (two-dimensional double array of size 3 by 4 to find reduced row echelon form of and to store the result in)
+
+function: finds reduced row echelon form of parsed array and stores the result in the same array.
+
+f. rot
+return type: void
+
+arguments: (char, double) -> (local axis to rotate about, angle of rotation)
+
+function: rotates the basis about the selected axis by the given angle of rotation.
+
+g. basisreset
+return type: void
+
+arguments: (void) -> (void)
+
+function: resets xbasis to [1, 0, 0], ybasis to [0, 1, 0], and zbasis to [0, 0, 1].
+
+h. putbasis
+return type: void
+
+arguments: (char, double [3]) -> (basis to be copied (x, y, z), array to copy selected basis to)
+
+function: copies the selected basis to the provided array.
+
+i. modbasis
+return type: void
+
+arguments: (char, double [3]) -> (basis to be modified (x, y, z), array containing new basis (must have norm of 1))
+
+function: replaces selected basis with specified basis.
+
+j. shiftctr
+return type: void
+
+arguments: (double, double, double) -> (distance to shift on x, distance to shift on y, distance to shift on z)
+
+function: shifts all of the points contained in the R3Object's polygons by the specified amounts on the specified axes.
+
+k. setctr
+return type: void
+
+arguments: (double, double, double) -> (new x center, new y center, new z center)
+
+function: shifts the object the appropriate amount such that the new center is the specified center.
+
+l. center
+return type: void
+
+arguments: (double [3]) -> (array to store center coordinates)
+
+function: stores the center coordinates in the parsed array.
+
+m. ctrscaleoff
+return type: void
+
+arguments: (double, double, double) -> (new rotational center x, new rotational center y, new rotational center z)
+
+function: allows the object to be rotated about a new specified center of rotation.
+
+n. ctrscaleon
+return type: void
+
+arguments: (void) -> (void)
+
+function: resets the center of rotation to the geometric center of the object.
+
+o. cpyscalep
+return type: void
+
+arguments: (double [3]) -> (array to store center of rotation)
+
+function: stores the center of rotation in the parsed array.
+
+p. addolink
+return type: void
+
+arguments: (R3Object *, bool) -> (R3Object to object link current object to, recursive mode specifier)
+
+function: object links the current R3Object to the specified R3Object and to all of the specified object's subsequent object linked  R3Objects (user initiated linking should always specify a Boolean value of true).
+
+q. addrzlink
+return type: void
+
+arguments: (R3Object *, bool) -> (R3Object to rotationally link current object to on z axis, recursive mode specifier)
+
+function: rotationally links the current R3Object to the specified R3Object on the z axis and to all of its subsequent rzlinked R3Objects (user initiated linking should always specify a Boolean value of true).
+
+r. addrxlink
+return type: void
+
+arguments: (R3Object *, bool) -> (R3Object to rotationally link current object to on x axis, recursive mode specifier)
+
+function: rotationally links the current R3Object to the specified R3Object on the x axis and to all of the specified object's subsequent rxlinked R3Objects (user initiated linking should always specify a Boolean value of true).
+
+s. addrylink
+return type: void
+
+arguments: (R3Object *, bool) -> (R3Object to rotationally link current object to on y axis, recursive mode specifier)
+
+function: rotationally links the current R3Object to the specified R3Object on the y axis and to all of the specified object's subsequent rzlinked R3Objects (user initiated linking should always specify a Boolean value of true).
+
+t. delolink
+return type: void
+
+arguments: (int, bool) -> (index to delink, recursive mode specifier)
+
+function: to de-object link the current object with all objects it is linked to.
+
+u. delrzlink
+return type: void
+
+arguments: (int, bool) -> (index to delink, recursive mode specifier)
+
+function: to de-rzlink the current object with all objects it is linked to.
+
+v. delrxlink
+return type: void
+
+arguments: (int, bool) -> (index to delink, recursive mode specifier)
+
+function: to de-rxlink the current object with all objects it is linked to.
+
+w. delrylink
+return type: void
+
+arguments: (int, bool) -> (index to delink, recursive mode specifier)
+
+function: to de-rylink the current object with all objects it is linked to.
+
+x. settexturemode
+return type: void
+
+arguments: (bool) -> (texture state)
+
+function: sets all of the polygons in the selected object to the specified mode.
+
+y. saveobj
+return type: void
+
+arguments: (string) -> (output filename)
+
+function: copies the unrotated coordinates of an R3Object's constituent polygons to file, such that the object's core visual data (polygonal coordinates, fill and transparency characters, and wireframe settings) may be loaded from file using the loadobj function.
+
+z. clrloadsides
+return type: void
+
+arguments: (void) -> (void)
+
+function: clears the loadsides Polygon object vector by resizing the vector to size zero.
+
+aa. putctrscale
+return type: Boolean
+
+arguments: (void) -> (void)
+
+function: returns the current center of rotation scaling mode.
+
+bb. sidenum
+return type: integer
+
+arguments: (void) -> (void)
+
+function: returns the number of polygons an R3Object contains.
+
+cc. olinknum
+return type: integer
+
+arguments: (void) -> (void)
+
+function: returns the number of R3Objects olinked to the current object.
+
+dd. rzlinknum
+return type: integer
+
+arguments: (void) -> (void)
+
+function: returns the number of R3Objects rzlinked to the current object.
+
+ee. rxlinknum
+return type: integer
+
+arguments: (void) -> (void)
+
+function: returns the number of R3Objects rxlinked to the current object.
+
+ff. rylinknum
+return type: integer
+
+arguments: (void) -> (void)
+
+function: returns the number of R3Objects rylinked to the current object.
+
+gg. loadobj
+return type: int (return = 0 -> successful load, 1 -> incorrect file type, 2 -> format error)
+
+arguments: (string) -> (input filename)
+
+function: loads an R3Object from a user specified ".tr3" file and overwrites the current R3Object data with this loaded data.
+
+hh. loadsidenum
+return type: int
+
+arguments: (void) -> (void)
+
+function: returns the number of Polygons stored in the loadsides vector of the current R3Object.
+
+ii. centerx
+return type: double
+
+arguments: (void) -> (void)
+
+function: returns the x coordinate of the geometric center of the object.
+
+jj. centery
+return type: double
+
+arguments: (void) -> (void)
+
+function: returns the y coordinate of the geometric center of the object.
+
+kk. centerz
+return type: double
+
+arguments: (void) -> (void)
+
+function: returns the z coordinate of the geometric center of the object.
+
+ll. putside
+return type: Polygon Pointer
+
+arguments: (int) -> (side index)
+
+function: returns a pointer to the polygon at the specified side index.
+
+mm. putolink
+return type: R3Object Pointer
+
+arguments: (int) -> (olink index)
+
+function: returns a pointer to the R3Object pointed to at the specified olink index.
+
+nn. putrzlink
+return type: R3Object Pointer
+
+arguments: (int) -> (rzlink index)
+
+function: returns a pointer to the R3Object pointed to at the specified rzlink index.
+
+oo. putrxlink
+return type: R3Object Pointer
+
+arguments: (int) -> (rxlink index)
+
+function: returns a pointer to the R3Object pointed to at the specified rxlink index.
+
+pp. putrylink
+return type: R3Object Pointer
+
+arguments: (int) -> (rylink index)
+
+function: returns a pointer to the R3Object pointed to at the specified rylink index.
+
+qq. putloadside
+return type: Polygon
+
+arguments: (int) -> (loadsides index)
+
+function: returns the Polygon object stored at the specified loadsides index in the current R3Object.
+
+rr. permcpy
+return type: one-dimensional Polygon object vector
+
+arguments: void
+
+function: copies the rotated coordinates of a given R3Object's polygons as a vector of Polygons containing the new coordinates (intended for advanced R3Objects with independently movable parts).
+
+
+E. The "R3Cam" Class
+
+
+1. Description
+	The "R3Cam" class is, at its core, a way to display the three-dimensional objects that the "Polygon" and "R3Object" classes established through a "Window" object. As such, the "view" vector is the most important aspect of the "R3Cam" class. An "R3Cam" object, much like an "R3Object" object, has its own basis; however, the "R3Cam" and "R3Object" classes differ in that the "R3Object" class rotates with respect to changes in basis, whereas the "R3Cam" class always rotates the basis on fixed XY, YZ, and XZ planes. Furthermore, "R3Cam" objects also have their own position in three-space, and can be maneuvered through the three-dimensional environment.
+
+2. Variables
+
+
+a. view
+type: one-dimensional ASCII character vector
+
+stores: the camera's rendering of the environment.
+
+b. viewdepth
+type: one-dimensional double vector.
+
+stores: the depth of each ASCII character space in view (variable).
+
+c. objects
+type: R3Object Pointer vector
+
+stores: pointers to the objects to be rendered in the camera's perspective.
+
+d. camx
+type: double
+
+stores: the camera's position's x coordinate.
+
+e. camy
+type: double
+
+stores: the camera's position's y coordinate.
+
+f. camz
+type: double
+
+stores: the camera's position's z coordinate.
+
+g. zoomfactor
+type: double
+
+stores: the camera's zoom factor (10 is the default value).
+
+h. cambasisx
+type: one-dimensional double array of size 3
+
+stores: the camera's x basis.
+
+i. cambasisy
+type: one-dimensional double array of size 3
+
+stores: the camera's y basis.
+
+j. cambasisz
+type: one-dimensional double array of size 3
+
+stores: the camera's z basis.
+
+k. viewcolumns
+type: integer
+
+stores: the number of columns in the camera's view display.
+
+
+3. Functions
+
+
+a. R3Cam Constructor Function
+return type: void
+
+arguments: (void) -> (void)
+
+function: defaults view size to SCRWIDTH by SCRHEIGHT, clears view (variable), sets camera position to (0, 0, 0), sets zoomfactor to a default of 10, and resets the basis.
+
+b. drawobjects
+return type: void
+
+arguments: (void) -> (void)
+
+function: clears view (variable) and calls drawobject for all objects in objects (variable).
+
+c. drawobject
+return type: void
+
+arguments: (R3Object) -> (R3Object to be drawn)
+
+function: calls drawpolygon for all polygons in the parsed R3Object.
+
+d. drawpolygon
+return type: void
+
+arguments: (Polygon, R3Object) -> (current polygon, current R3Object)
+
+function: parses the current polygon to texturepolygon if texturemode is true and parses the three point pairs of the polygon to drawline if texturemode is false.
+
+e. drawline
+return type: void
+
+arguments: (double [3], double [3], char) -> (point 1 (same two-dimensional coordinate plane as view display), point 2, line drawing character)
+
+function:  draws a line in three-space from point 1 to point 2, using the specified character.
+
+f. setcampos
+return type: void
+
+arguments: (double, double, double) -> (x coordinate of camera position, y coordinate of camera position, z coordinate of camera position)
+
+function: resets the camera's position to the specified point.
+
+g. addobject
+return type: void
+
+arguments: (R3Object *) -> (pointer to the object to be added to the R3Cam)
+
+function: adds the R3Object pointer to objects (variable) after resizing objects (variable).
+
+h. delobject
+return type: void
+
+arguments: (int) -> (object index)
+
+function: deletes the R3Object pointer from the object index and closes the gap.
+
+i. modobject
+return type: void
+
+arguments: (int, R3Object *) -> (object index, replacement R3Object pointer)
+
+function: replaces the R3Object pointer in objects (variable) at the specified index with the specified R3Object pointer.
+
+j.  clearview
+return type: void
+
+arguments: (void) -> (void)
+
+function: sets every element in view to ' ' and sets every element in viewdepth to -1.
+
+k. rotatecam
+return type: void
+
+arguments: (char, double) -> (axis to be rotated about, angle through which the camera is to be rotated)
+
+function: rotates the camera perspective about the selected axis through the specified angle.
+
+l. basisreset
+return type: void
+
+arguments: (void) -> (void)
+
+function: sets the xbasis of the camera to [1, 0, 0], the ybasis of the camera to [0, 1, 0], the zbasis of the camera to [0, 0, 1].
+
+m. cpybasis
+return type: void
+
+arguments: (char, double [3]) -> (basis to be copied, array used to store selected basis)
+
+function: copies the selected camera basis to the parsed array.
+
+n. setviewsize
+return type: void
+
+arguments: (int, int) -> (new number of rows in two-dimensional view display, new number of columns in two-dimensional view display)
+
+function: resets the size of view (variable) and specifies a new number of columns.
+
+o. modview
+return type: void
+
+arguments: (char, int, int) -> (replacement character, x coordinate of index to be modified, y coordinates of index to be modified)
+
+function: replaces the character in view (variable) at the specified index.
+
+p. modviewdepth
+return type: void
+
+arguments: (double, int, int) -> (replacement depth, x coordinate of index to be modified, y coordinates of index to be modified)
+
+function: replaces the depth in viewdepth (variable) at the specified index.
+
+q. texturepolygon
+return type: void
+
+arguments: (Polygon, R3Object) -> (current polygon, current object)
+
+function: draws textured polygon.
+
+r. applyrotation
+return type: void
+
+arguments: (double, double, double, double [3], double [3], R3Object) -> (x coordinate of point to be rotated, y coordinate of point to be rotated, z coordinate of point to be rotated, array containing center of rotation, array to store resulting rotated point, current object)
+
+function: applies the rotation of the local object basis and the camera basis to the selected point.
+
+s. setzoomfactor
+return type: void
+
+arguments: (double) -> (new zoomfactor)
+
+function: sets the zoomfactor to the specified value.
+
+t. scalept
+return type: void
+
+arguments: (double, double, double, double [3]) -> (x coordinate of point to be scaled, y coordinate of point to be scaled, z coordinate of point to be scaled, array to store scaled point)
+
+function: scales the specified three-dimensional point for two-dimensional display.
+
+u. twodconvert
+return type: Boolean (returns false if the polygon is behind the camera)
+
+arguments: (double [3], double [3], double [3], R3Object, Polygon) -> (first point in polygon, second point in polygon, third point in polygon, current object, current polygon)
+
+function: applies basis rotation to the points and scales the rotated points for two-dimensional output.
+
+v. getelement
+return type: ASCII character
+
+arguments: (int, int) -> (x coordinate of index, y coordinate of index)
+
+function: returns the specified element of view (gets index from two-dimensional coordinates).
+
+w. getelementraw
+return type: ASCII character
+
+arguments: (int) -> (index)
+
+function: returns the specified element of view (linearly defined index is directly provided).
+
+x. getelementindex
+return type: integer
+
+arguments: (int, int) -> (x coordinate, y coordinate)
+
+function: translates and returns a two-dimensional index for view and viewdepth (variables) as a one-dimensional index.
+
+y. objectnum
+return type: integer
+
+arguments: (void) -> (void)
+
+function: returns the number of objects to be rendered by the camera.
+
+z. putviewsize
+return type: integer
+
+arguments: (void) -> (void)
+
+function: returns the size of view (variable).
+
+aa. putviewcolumns
+return type: integer
+
+arguments: (void) -> (void)
+
+function: returns the number of columns in the view display.
+
+bb. getviewdepth
+return type: double
+
+arguments: (int, int) -> (x coordinate, y coordinate)
+
+function: returns the view depth at the index specified by the x and y coordinates.
+
+cc. getviewdepthraw
+return type: double
+
+arguments: (int) -> (index)
+
+function: returns the view depth at the index.
+
+dd. putcamx
+return type: double
+
+arguments: (void) -> (void)
+
+function: returns the x coordinate of the camera position.
+
+ee. putcamy
+return type: double
+
+arguments: (void) -> (void)
+
+function: returns the y coordinate of the camera position.
+
+ff. putcamz
+return type: double
+
+arguments: (void) -> (void)
+
+function: returns the z coordinate of the camera position.
+
+gg. putzoomfactor
+return type: double
+
+arguments: (void) -> (void)
+
+function: returns the zoomfactor.
+
+hh. putview
+return type: one-dimensional ASCII character vector
+
+arguments: (void) -> (void)
+
+function: returns view (variable).
+
+ii. putviewdepth
+return type: one-dimensional double vector
+
+arguments: (void) -> (void)
+
+function: returns viewdepth (variable).
+
+jj. putobj
+return type: R3Object Pointer
+
+arguments: (int) -> (objects index)
+
+function: returns the R3Object pointer stored at the specified index in objects (variable).
+
+
+F. Miscellaneous Functions
+
+
+1. roundnum
+return type: int
+
+arguments: (double) -> (number to be rounded)
+
+function: rounds double numbers to integers and returns the integer value.
+
+2. dist
+return type: double
+
+arguments: (double, double, double, double, double, double) -> (x1, y1, z1, x2, y2, z2)
+
+function: finds and returns the distance between two points in three-space.
+
+3. findang
+return type: double
+
+arguments: (double, double) -> (x distance, y distance)
+
+function: finds and returns the angle between a point and an origin.
+
+4. doubletostring
+return type: string
+
+arguments: (double) -> (number to convert to string)
+
+function: converts a double number to a string and returns the result (return string is to six decimal places).
+
+
+IV. Additional Notes
+* My only additional note is for those using this engine to please cite my development of the engine in their work.
+
+~Kyle L. Miskell
+
+BSD Licensure Statement:
+
+Copyright (c) 2013, Kyle L. Miskell
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. All advertising materials mentioning features or use of this software
+   must display the following acknowledgement:
+   This product includes software developed by Kyle L. Miskell.
+4. Neither the name of the TEROS Engine nor the
+   names of its contributors may be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY Kyle L. Miskell ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL Kyle L. Miskell BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
